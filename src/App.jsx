@@ -9,98 +9,11 @@ import Register from './pages/Register';
 import { useCloudStorage } from './hooks/useCloudStorage';
 import { useAuth } from './contexts/AuthContext';
 
-// Sample data for initial demo
-const sampleEvents = [
-    {
-        id: '1',
-        title: 'ประชุมทีมฟุตบอล',
-        description: 'วางแผนการถ่ายทำไฮไลท์',
-        category: 'work',
-        date: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString(),
-        time: '14:00',
-    },
-    {
-        id: '2',
-        title: 'ส่งงานคณิตศาสตร์',
-        description: 'แบบฝึกหัดบทที่ 5',
-        category: 'study',
-        date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
-        time: '09:00',
-    },
-    {
-        id: '3',
-        title: 'ถ่ายวิดีโอ',
-        description: 'ถ่ายเกมแข่งขัน',
-        category: 'work',
-        date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
-        time: '16:00',
-    },
-];
-
-const sampleHomework = [
-    {
-        id: '1',
-        title: 'ทำแบบฝึกหัดหน้า 45-50',
-        subject: 'math',
-        priority: 'high',
-        deadline: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString(),
-        completed: false,
-    },
-    {
-        id: '2',
-        title: 'เขียนเรียงความเรื่องสิ่งแวดล้อม',
-        subject: 'thai',
-        priority: 'medium',
-        deadline: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
-        completed: false,
-    },
-    {
-        id: '3',
-        title: 'อ่านบทที่ 7 และสรุป',
-        subject: 'science',
-        priority: 'low',
-        deadline: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
-        completed: true,
-    },
-];
-
-const sampleWorkTasks = [
-    {
-        id: '1',
-        title: 'วิดีโอไฮไลท์ฟุตบอล รอบชิงฯ',
-        description: 'สร้างวิดีโอไฮไลท์การแข่งขันฟุตบอลรอบชิงชนะเลิศ พร้อมเอฟเฟกต์และเพลงประกอบ',
-        category: 'football',
-        deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-        progress: 35,
-        subtasks: [
-            { id: 's1', title: 'รวบรวมคลิปจากกล้องทุกตัว', completed: true },
-            { id: 's2', title: 'ตัดต่อไฮไลท์ประตู', completed: true },
-            { id: 's3', title: 'เพิ่มกราฟิกชื่อนักเตะ', completed: false },
-            { id: 's4', title: 'ใส่เพลงประกอบ', completed: false },
-            { id: 's5', title: 'Color grading', completed: false },
-            { id: 's6', title: 'Export และอัพโหลด', completed: false },
-        ],
-    },
-    {
-        id: '2',
-        title: 'ออกแบบโปสเตอร์งานกีฬาสี',
-        description: 'ออกแบบโปสเตอร์ประชาสัมพันธ์งานกีฬาสีประจำปี',
-        category: 'graphics',
-        deadline: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toISOString(),
-        progress: 66,
-        subtasks: [
-            { id: 's1', title: 'ร่างแบบ concept', completed: true },
-            { id: 's2', title: 'ออกแบบใน Photoshop', completed: true },
-            { id: 's3', title: 'ให้อาจารย์ approve', completed: false },
-        ],
-    },
-];
-
 function App() {
     const [activeView, setActiveView] = useState('dashboard');
-    const [events, setEvents] = useCloudStorage('primal-events', sampleEvents);
-    const [homework, setHomework] = useCloudStorage('primal-homework', sampleHomework);
-    const [workTasks, setWorkTasks] = useCloudStorage('primal-work', sampleWorkTasks);
+    const [events, setEvents] = useCloudStorage('primal-events', []);
+    const [homework, setHomework] = useCloudStorage('primal-homework', []);
+    const [workTasks, setWorkTasks] = useCloudStorage('primal-work', []);
     const { currentUser, logout } = useAuth();
 
     // If needed to handle initial auth view logic
