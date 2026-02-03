@@ -4,7 +4,10 @@ import Dashboard from './components/Dashboard';
 import Calendar from './components/Calendar';
 import HomeworkPlanner from './components/HomeworkPlanner';
 import WorkPlanner from './components/WorkPlanner';
-import { useLocalStorage } from './hooks/useLocalStorage';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import { useCloudStorage } from './hooks/useCloudStorage';
+import { useAuth } from './contexts/AuthContext';
 
 // Sample data for initial demo
 const sampleEvents = [
@@ -95,9 +98,24 @@ const sampleWorkTasks = [
 
 function App() {
     const [activeView, setActiveView] = useState('dashboard');
-    const [events, setEvents] = useLocalStorage('primal-events', sampleEvents);
-    const [homework, setHomework] = useLocalStorage('primal-homework', sampleHomework);
-    const [workTasks, setWorkTasks] = useLocalStorage('primal-work', sampleWorkTasks);
+    const [events, setEvents] = useCloudStorage('primal-events', sampleEvents);
+    const [homework, setHomework] = useCloudStorage('primal-homework', sampleHomework);
+    const [workTasks, setWorkTasks] = useCloudStorage('primal-work', sampleWorkTasks);
+    const { currentUser, logout } = useAuth();
+
+    // If needed to handle initial auth view logic
+    // But since we want to allow guest usage? Or force login?
+    // User requested "System register login", likely implies auth wall or optional auth.
+    // Let's make it optional: Dashboard has a "Login" button if not logged in.
+    // OR: The user can access 'login' and 'register' views via sidebar or redirect.
+
+    // Let's check if activeView is login/register
+    if (activeView === 'login') {
+        return <Login setActiveView={setActiveView} />;
+    }
+    if (activeView === 'register') {
+        return <Register setActiveView={setActiveView} />;
+    }
 
     const renderView = () => {
         switch (activeView) {
@@ -123,7 +141,7 @@ function App() {
 
     return (
         <div className="app-container">
-            <Sidebar activeView={activeView} setActiveView={setActiveView} />
+            <Sidebar activeView={activeView} setActiveView={setActiveView} isAuthenticated={!!currentUser} logout={logout} />
             <main className="main-content">
                 {renderView()}
             </main>

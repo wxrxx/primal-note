@@ -9,7 +9,7 @@ const navItems = [
     { id: 'work', label: 'งาน', icon: Icons.Briefcase },
 ];
 
-function Sidebar({ activeView, setActiveView }) {
+function Sidebar({ activeView, setActiveView, isAuthenticated, logout }) {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
@@ -71,15 +71,50 @@ function Sidebar({ activeView, setActiveView }) {
 
                 {/* Footer */}
                 <div className="sidebar-footer">
-                    <div className="user-card">
-                        <div className="user-avatar">
-                            <span>👤</span>
+                    {isAuthenticated ? (
+                        <div className="user-card" onClick={logout} style={{ cursor: 'pointer' }}>
+                            <div className="user-avatar">
+                                <span>👤</span>
+                            </div>
+                            <div className="user-info">
+                                <span className="user-name">บัญชีของฉัน</span>
+                                <span className="user-status" style={{ color: '#ef4444' }}>ออกจากระบบ</span>
+                            </div>
                         </div>
-                        <div className="user-info">
-                            <span className="user-name">ผู้ใช้งาน</span>
-                            <span className="user-status">ออนไลน์</span>
+                    ) : (
+                        <div className="auth-buttons" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                            <button
+                                onClick={() => setActiveView('login')}
+                                style={{
+                                    padding: '10px',
+                                    borderRadius: '8px',
+                                    border: '1px solid var(--border-color)',
+                                    background: 'rgba(255,255,255,0.05)',
+                                    color: 'white',
+                                    cursor: 'pointer',
+                                    fontWeight: '500',
+                                    fontFamily: 'var(--font-family)'
+                                }}
+                            >
+                                เข้าสู่ระบบ
+                            </button>
+                            <button
+                                onClick={() => setActiveView('register')}
+                                style={{
+                                    padding: '10px',
+                                    borderRadius: '8px',
+                                    border: 'none',
+                                    background: 'linear-gradient(135deg, var(--primary), var(--secondary))',
+                                    color: 'white',
+                                    cursor: 'pointer',
+                                    fontWeight: '500',
+                                    fontFamily: 'var(--font-family)'
+                                }}
+                            >
+                                สมัครสมาชิก
+                            </button>
                         </div>
-                    </div>
+                    )}
                 </div>
             </aside>
         </>
