@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { useNotification } from '../contexts/NotificationContext';
 import './Auth.css';
 
 export default function Login({ setActiveView }) {
@@ -8,6 +9,7 @@ export default function Login({ setActiveView }) {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const { login } = useAuth();
+    const { success, error: showError } = useNotification();
 
     async function handleSubmit(e) {
         e.preventDefault();
@@ -15,9 +17,11 @@ export default function Login({ setActiveView }) {
             setError('');
             setLoading(true);
             await login(email, password);
+            success('เข้าสู่ระบบสำเร็จ ยินดีต้อนรับ!');
             setActiveView('dashboard');
         } catch (err) {
             setError('Failed to log in: ' + err.message);
+            showError('เข้าสู่ระบบไม่สำเร็จ: ' + err.message);
         }
         setLoading(false);
     }

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNotification } from '../contexts/NotificationContext';
 import { Icons } from './Icons';
 import './Sidebar.css';
 
@@ -11,6 +12,16 @@ const navItems = [
 
 function Sidebar({ activeView, setActiveView, isAuthenticated, logout }) {
     const [isOpen, setIsOpen] = useState(false);
+    const { success, error } = useNotification();
+
+    const handleLogout = async () => {
+        try {
+            await logout();
+            success('ออกจากระบบแล้ว');
+        } catch (err) {
+            error('เกิดข้อผิดพลาดในการออกจากระบบ');
+        }
+    };
 
     return (
         <>
@@ -72,7 +83,7 @@ function Sidebar({ activeView, setActiveView, isAuthenticated, logout }) {
                 {/* Footer */}
                 <div className="sidebar-footer">
                     {isAuthenticated ? (
-                        <div className="user-card" onClick={logout} style={{ cursor: 'pointer' }}>
+                        <div className="user-card" onClick={handleLogout} style={{ cursor: 'pointer' }}>
                             <div className="user-avatar">
                                 <span>👤</span>
                             </div>

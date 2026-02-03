@@ -50,6 +50,11 @@ const createWindow = () => {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 app.whenReady().then(() => {
+    // Set App User Model ID for Windows Notifications
+    if (process.platform === 'win32') {
+        app.setAppUserModelId('com.primalnote.app');
+    }
+
     createWindow();
 
     app.on('activate', () => {

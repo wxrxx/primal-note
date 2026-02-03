@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { useNotification } from '../contexts/NotificationContext';
 import './Auth.css';
 
 export default function Register({ setActiveView }) {
@@ -9,6 +10,7 @@ export default function Register({ setActiveView }) {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const { signup } = useAuth();
+    const { success, error: showError } = useNotification();
 
     async function handleSubmit(e) {
         e.preventDefault();
@@ -20,9 +22,11 @@ export default function Register({ setActiveView }) {
             setError('');
             setLoading(true);
             await signup(email, password);
+            success('สมัครสมาชิกสำเร็จ!');
             setActiveView('dashboard');
         } catch (err) {
             setError('Failed to create an account: ' + err.message);
+            showError('สมัครสมาชิกไม่สำเร็จ: ' + err.message);
         }
         setLoading(false);
     }

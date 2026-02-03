@@ -8,6 +8,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import { useCloudStorage } from './hooks/useCloudStorage';
 import { useAuth } from './contexts/AuthContext';
+import NotificationToast from './components/NotificationToast';
 
 function App() {
     const [activeView, setActiveView] = useState('dashboard');
@@ -58,6 +59,7 @@ function App() {
             <main className="main-content">
                 {renderView()}
             </main>
+            <NotificationToast />
         </div>
     );
 }
