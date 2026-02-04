@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
 import { useNotification } from '../contexts/NotificationContext';
 import { Icons } from './Icons';
 import './Sidebar.css';
@@ -12,6 +13,7 @@ const navItems = [
 
 function Sidebar({ activeView, setActiveView, isAuthenticated, logout }) {
     const [isOpen, setIsOpen] = useState(false);
+    const { currentUser } = useAuth();
     const { success, error } = useNotification();
 
     const handleLogout = async () => {
@@ -88,7 +90,7 @@ function Sidebar({ activeView, setActiveView, isAuthenticated, logout }) {
                                 <span>👤</span>
                             </div>
                             <div className="user-info">
-                                <span className="user-name">บัญชีของฉัน</span>
+                                <span className="user-name">{currentUser?.displayName || 'บัญชีของฉัน'}</span>
                                 <span className="user-status" style={{ color: '#ef4444' }}>ออกจากระบบ</span>
                             </div>
                         </div>

@@ -4,6 +4,7 @@ import { useNotification } from '../contexts/NotificationContext';
 import './Auth.css';
 
 export default function Register({ setActiveView }) {
+    const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -21,7 +22,7 @@ export default function Register({ setActiveView }) {
         try {
             setError('');
             setLoading(true);
-            await signup(email, password);
+            await signup(email, password, username);
             success('สมัครสมาชิกสำเร็จ!');
             setActiveView('dashboard');
         } catch (err) {
@@ -37,6 +38,16 @@ export default function Register({ setActiveView }) {
                 <h2>สมัครสมาชิก</h2>
                 {error && <div className="auth-error">{error}</div>}
                 <form onSubmit={handleSubmit}>
+                    <div className="form-group">
+                        <label>ชื่อผู้ใช้ (Username)</label>
+                        <input
+                            type="text"
+                            required
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            placeholder="Your Name"
+                        />
+                    </div>
                     <div className="form-group">
                         <label>อีเมล</label>
                         <input

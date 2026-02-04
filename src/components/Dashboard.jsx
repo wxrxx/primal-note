@@ -1,10 +1,12 @@
 import React from 'react';
+import { useAuth } from '../contexts/AuthContext';
 import { Icons } from './Icons';
 import { format, isToday, isTomorrow, differenceInDays } from 'date-fns';
 import { th } from 'date-fns/locale';
 import './Dashboard.css';
 
 function Dashboard({ events, homework, workTasks, setActiveView }) {
+    const { currentUser } = useAuth();
     const today = new Date();
 
     // Get upcoming events (next 7 days)
@@ -78,7 +80,7 @@ function Dashboard({ events, homework, workTasks, setActiveView }) {
             <header className="dashboard-header">
                 <div className="header-content">
                     <h1 className="header-title">
-                        สวัสดี! 👋
+                        สวัสดี{currentUser?.displayName ? `, ${currentUser.displayName}` : ''}! 👋
                     </h1>
                     <p className="header-subtitle">
                         วันนี้ {format(today, 'EEEE d MMMM yyyy', { locale: th })}
