@@ -62,10 +62,12 @@ function Sidebar({ activeView, setActiveView, isAuthenticated, logout }) {
                         {navItems.map((item) => {
                             const Icon = item.icon;
                             const isActive = activeView === item.id;
+                            const isLocked = !isAuthenticated && item.id !== 'dashboard';
+
                             return (
                                 <li key={item.id}>
                                     <button
-                                        className={`nav-item ${isActive ? 'active' : ''}`}
+                                        className={`nav-item ${isActive ? 'active' : ''} ${isLocked ? 'locked' : ''}`}
                                         onClick={() => {
                                             setActiveView(item.id);
                                             setIsOpen(false);
@@ -75,6 +77,11 @@ function Sidebar({ activeView, setActiveView, isAuthenticated, logout }) {
                                             <Icon />
                                         </span>
                                         <span className="nav-label">{item.label}</span>
+                                        {isLocked && (
+                                            <span className="lock-indicator">
+                                                <Icons.Lock />
+                                            </span>
+                                        )}
                                         {isActive && <span className="nav-indicator" />}
                                     </button>
                                 </li>

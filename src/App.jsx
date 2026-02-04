@@ -7,6 +7,7 @@ import WorkPlanner from './components/WorkPlanner';
 import Ideas from './components/Ideas';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import LoginRequired from './components/LoginRequired';
 import { useCloudStorage } from './hooks/useCloudStorage';
 import { useAuth } from './contexts/AuthContext';
 import NotificationToast from './components/NotificationToast';
@@ -34,6 +35,18 @@ function App() {
     }
 
     const renderView = () => {
+        // Restricted views check
+        const isRestricted = ['calendar', 'homework', 'work', 'ideas'].includes(activeView);
+        if (isRestricted && !currentUser) {
+            const featureNames = {
+                calendar: 'ปฏิทิน',
+                homework: 'การบ้าน',
+                work: 'โปรเจกต์งาน',
+                ideas: 'คลังไอเดีย/บันทึก'
+            };
+            return <LoginRequired setActiveView={setActiveView} featureName={featureNames[activeView]} />;
+        }
+
         switch (activeView) {
             case 'dashboard':
                 return (

@@ -91,6 +91,12 @@ function Dashboard({ events, homework, workTasks, ideas = [], setActiveView }) {
                         วันนี้ {format(today, 'EEEE d MMMM yyyy', { locale: th })}
                     </p>
                 </div>
+                {!currentUser && (
+                    <div className="guest-badge glass-card" onClick={() => setActiveView('login')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                        <Icons.Lock />
+                        <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Guest Mode (เข้าสู่ระบบเพื่อซิงค์ข้อมูล)</span>
+                    </div>
+                )}
             </header>
 
             {/* Stats Grid */}
@@ -286,9 +292,21 @@ function Dashboard({ events, homework, workTasks, ideas = [], setActiveView }) {
             </div>
 
             {/* Quick Add Button */}
-            <button className="quick-add-btn btn btn-primary" onClick={() => setActiveView('calendar')}>
-                <Icons.Plus />
-                <span>เพิ่มกำหนดการ</span>
+            <button
+                className={`quick-add-btn btn btn-primary ${!currentUser ? 'disabled' : ''}`}
+                onClick={() => currentUser ? setActiveView('calendar') : setActiveView('login')}
+            >
+                {currentUser ? (
+                    <>
+                        <Icons.Plus />
+                        <span>เพิ่มกำหนดการ</span>
+                    </>
+                ) : (
+                    <>
+                        <Icons.Lock />
+                        <span>กรุณาเข้าสู่ระบบ</span>
+                    </>
+                )}
             </button>
         </div>
     );
