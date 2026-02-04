@@ -5,7 +5,7 @@ import { format, isToday, isTomorrow, differenceInDays } from 'date-fns';
 import { th } from 'date-fns/locale';
 import './Dashboard.css';
 
-function Dashboard({ events, homework, workTasks, setActiveView }) {
+function Dashboard({ events, homework, workTasks, ideas = [], setActiveView }) {
     const { currentUser } = useAuth();
     const today = new Date();
 
@@ -30,6 +30,11 @@ function Dashboard({ events, homework, workTasks, setActiveView }) {
         .filter(t => t.progress < 100)
         .sort((a, b) => new Date(a.deadline) - new Date(b.deadline))
         .slice(0, 5);
+
+    // Get latest ideas (last 3)
+    const latestIdeas = (ideas || [])
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        .slice(0, 3);
 
     // Stats
     const stats = [
@@ -225,6 +230,51 @@ function Dashboard({ events, homework, workTasks, setActiveView }) {
                                             </span>
                                             <span className="work-subtasks">
                                                 {task.subtasks?.filter(s => s.completed).length || 0}/{task.subtasks?.length || 0} งานย่อย
+                                            </span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </section>
+
+                {/* Latest Ideas */}
+                <section className="dashboard-section glass-card full-width">
+                    <div className="section-header">
+                        <h2 className="section-title">
+                            <Icons.Lightbulb />
+                            ไอเดียล่าสุด
+                        </h2>
+                        <button className="btn btn-ghost btn-sm" onClick={() => setActiveView('ideas')}>
+                            ดูทั้งหมด
+                        </button>
+                    </div>
+                    <div className="section-content">
+                        {latestIdeas.length === 0 ? (
+                            <div className="empty-message">
+                                <span>ยังไม่มีไอเดียที่บันทึกไว้</span>
+                            </div>
+                        ) : (
+                            <div className="work-grid">
+                                {latestIdeas.map((idea, index) => (
+                                    <div key={idea.id} className="work-card" style={{ animationDelay: `${index * 50}ms` }}>
+                                        <div className="work-header">
+                                            <span className="work-title">{idea.title}</span>
+                                        </div>
+                                        {idea.content && (
+                                            <p className="work-description" style={{
+                                                display: '-webkit-box',
+                                                WebkitLineClamp: 3,
+                                                WebkitBoxOrient: 'vertical',
+                                                overflow: 'hidden'
+                                            }}>
+                                                {idea.content}
+                                            </p>
+                                        )}
+                                        <div className="work-footer">
+                                            <span className="work-deadline">
+                                                {format(new Date(idea.createdAt), 'd MMM yyyy', { locale: th })}
                                             </span>
                                         </div>
                                     </div>

@@ -4,6 +4,7 @@ import Dashboard from './components/Dashboard';
 import Calendar from './components/Calendar';
 import HomeworkPlanner from './components/HomeworkPlanner';
 import WorkPlanner from './components/WorkPlanner';
+import Ideas from './components/Ideas';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import { useCloudStorage } from './hooks/useCloudStorage';
@@ -15,6 +16,7 @@ function App() {
     const [events, setEvents] = useCloudStorage('primal-events', []);
     const [homework, setHomework] = useCloudStorage('primal-homework', []);
     const [workTasks, setWorkTasks] = useCloudStorage('primal-work', []);
+    const [ideas, setIdeas] = useCloudStorage('primal-ideas', []);
     const { currentUser, logout } = useAuth();
 
     // If needed to handle initial auth view logic
@@ -48,6 +50,8 @@ function App() {
                 return <HomeworkPlanner homework={homework} setHomework={setHomework} />;
             case 'work':
                 return <WorkPlanner workTasks={workTasks} setWorkTasks={setWorkTasks} />;
+            case 'ideas':
+                return <Ideas ideas={ideas} setIdeas={setIdeas} />;
             default:
                 return <Dashboard events={events} homework={homework} workTasks={workTasks} setActiveView={setActiveView} />;
         }

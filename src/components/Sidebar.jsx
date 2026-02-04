@@ -9,6 +9,7 @@ const navItems = [
     { id: 'calendar', label: 'ปฏิทิน', icon: Icons.Calendar },
     { id: 'homework', label: 'การบ้าน', icon: Icons.Book },
     { id: 'work', label: 'งาน', icon: Icons.Briefcase },
+    { id: 'ideas', label: 'ไอเดีย/บันทึก', icon: Icons.Lightbulb },
 ];
 
 function Sidebar({ activeView, setActiveView, isAuthenticated, logout }) {
