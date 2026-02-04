@@ -46,8 +46,8 @@ function Sidebar({ activeView, setActiveView, isAuthenticated, logout }) {
                 {/* Logo */}
                 <div className="sidebar-header">
                     <div className="logo">
-                        <div className="logo-icon">
-                            <Icons.Target />
+                        <div className="logo-icon-premium">
+                            <img src="/logo.png" alt="Primal Note Logo" />
                         </div>
                         <div className="logo-text">
                             <span className="logo-title">Primal Note</span>

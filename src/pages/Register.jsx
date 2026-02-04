@@ -35,6 +35,9 @@ export default function Register({ setActiveView }) {
     return (
         <div className="auth-container">
             <div className="auth-card">
+                <div className="auth-logo">
+                    <img src="/logo.png" alt="Logo" />
+                </div>
                 <h2>สมัครสมาชิก</h2>
                 {error && <div className="auth-error">{error}</div>}
                 <form onSubmit={handleSubmit}>
