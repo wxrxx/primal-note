@@ -84,6 +84,30 @@
     color: var(--accent-tertiary);
 }
 
+.toast-warning {
+    border-left: 1px solid rgba(245, 158, 11, 0.5);
+}
+
+.toast-warning::before {
+    background: var(--accent-warning);
+}
+
+.toast-warning .toast-icon {
+    color: var(--accent-warning);
+}
+
+.toast-reminder {
+    border-left: 1px solid rgba(139, 92, 246, 0.5);
+}
+
+.toast-reminder::before {
+    background: var(--accent-primary);
+}
+
+.toast-reminder .toast-icon {
+    color: var(--accent-primary);
+}
+
 .toast-message {
     flex: 1;
     font-weight: 500;

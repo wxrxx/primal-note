@@ -20,6 +20,8 @@ export default function NotificationToast() {
                         {notification.type === 'success' && <Icons.CheckCircle />}
                         {notification.type === 'error' && <Icons.AlertCircle />}
                         {notification.type === 'info' && <Icons.Info />}
+                        {notification.type === 'warning' && <Icons.AlertTriangle />}
+                        {notification.type === 'reminder' && <Icons.Bell />}
                     </div>
                     <div className="toast-message">{notification.message}</div>
                     <div className="toast-close">×</div>

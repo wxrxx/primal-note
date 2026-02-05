@@ -29,9 +29,6 @@ export default function Login({ setActiveView }) {
     return (
         <div className="auth-container">
             <div className="auth-card">
-                <div className="auth-logo">
-                    <img src="/logo.png" alt="Logo" />
-                </div>
                 <h2>เข้าสู่ระบบ</h2>
                 {error && <div className="auth-error">{error}</div>}
                 <form onSubmit={handleSubmit}>

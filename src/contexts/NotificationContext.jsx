@@ -26,6 +26,8 @@ export function NotificationProvider({ children }) {
     const success = (message) => addNotification('success', message);
     const error = (message) => addNotification('error', message);
     const info = (message) => addNotification('info', message);
+    const warning = (message) => addNotification('warning', message, 5000);
+    const reminder = (message) => addNotification('reminder', message, 8000);
 
     const value = {
         notifications,
@@ -33,7 +35,9 @@ export function NotificationProvider({ children }) {
         removeNotification,
         success,
         error,
-        info
+        info,
+        warning,
+        reminder
     };
 
     return (

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Icons } from './Icons';
-import { format, isToday, isTomorrow, differenceInDays } from 'date-fns';
+import { format, isToday, isTomorrow, differenceInDays, startOfWeek, endOfWeek, eachDayOfInterval, subDays, isWithinInterval } from 'date-fns';
 import { th } from 'date-fns/locale';
 import './Dashboard.css';
 
@@ -36,6 +36,16 @@ function Dashboard({ events, homework, workTasks, ideas = [], setActiveView }) {
         .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
         .slice(0, 3);
 
+    // Urgent items (due today or tomorrow, or overdue)
+    const urgentItems = [
+        ...homework.filter(h => !h.completed && differenceInDays(new Date(h.deadline), today) <= 1)
+            .map(h => ({ type: 'homework', title: h.title, deadline: h.deadline, overdue: differenceInDays(new Date(h.deadline), today) < 0 })),
+        ...workTasks.filter(t => t.progress < 100 && differenceInDays(new Date(t.deadline), today) <= 1)
+            .map(t => ({ type: 'work', title: t.title, deadline: t.deadline, overdue: differenceInDays(new Date(t.deadline), today) < 0 })),
+        ...events.filter(e => isToday(new Date(e.date)))
+            .map(e => ({ type: 'event', title: e.title, deadline: e.date, overdue: false }))
+    ].slice(0, 3);
+
     // Stats
     const stats = [
         {
@@ -64,6 +74,79 @@ function Dashboard({ events, homework, workTasks, ideas = [], setActiveView }) {
         },
     ];
 
+    // Weekly productivity data (last 7 days)
+    const weekDays = Array.from({ length: 7 }, (_, i) => {
+        const date = subDays(today, 6 - i);
+        const dayEvents = events.filter(e => {
+            const eventDate = new Date(e.date);
+            return eventDate.toDateString() === date.toDateString();
+        }).length;
+        const dayHomework = homework.filter(h => {
+            const dueDate = new Date(h.deadline);
+            return h.completed && dueDate.toDateString() === date.toDateString();
+        }).length;
+        const dayTasks = workTasks.filter(t => {
+            const taskDate = new Date(t.deadline);
+            return t.progress === 100 && taskDate.toDateString() === date.toDateString();
+        }).length;
+        return {
+            date,
+            dayName: format(date, 'EEE', { locale: th }),
+            dayNum: format(date, 'd'),
+            total: dayEvents + dayHomework + dayTasks,
+            events: dayEvents,
+            homework: dayHomework,
+            tasks: dayTasks,
+            isToday: isToday(date)
+        };
+    });
+
+    const maxDayTotal = Math.max(...weekDays.map(d => d.total), 1);
+
+    // Productivity score (simple calculation)
+    const totalCompleted = homework.filter(h => h.completed).length + workTasks.filter(t => t.progress === 100).length;
+    const totalItems = homework.length + workTasks.length;
+    const productivityScore = totalItems > 0 ? Math.round((totalCompleted / totalItems) * 100) : 0;
+
+    // Detailed completion trackers
+    const homeworkCompleted = homework.filter(h => h.completed).length;
+    const homeworkTotal = homework.length;
+    const homeworkPercent = homeworkTotal > 0 ? Math.round((homeworkCompleted / homeworkTotal) * 100) : 0;
+
+    const workCompleted = workTasks.filter(t => t.progress === 100).length;
+    const workTotal = workTasks.length;
+    const workPercent = workTotal > 0 ? Math.round((workCompleted / workTotal) * 100) : 0;
+
+    const avgWorkProgress = workTotal > 0
+        ? Math.round(workTasks.reduce((sum, t) => sum + t.progress, 0) / workTotal)
+        : 0;
+
+    // Calculate productivity streak (consecutive days with completed tasks)
+    const calculateStreak = () => {
+        let streak = 0;
+        const allCompletedDates = [
+            ...homework.filter(h => h.completed && h.deadline).map(h => new Date(h.deadline).toDateString()),
+            ...workTasks.filter(t => t.progress === 100 && t.deadline).map(t => new Date(t.deadline).toDateString()),
+            ...events.map(e => new Date(e.date).toDateString())
+        ];
+
+        // Check from today backwards
+        for (let i = 0; i < 30; i++) {
+            const checkDate = subDays(today, i);
+            const dateStr = checkDate.toDateString();
+            if (allCompletedDates.includes(dateStr) || weekDays.find(d => d.date.toDateString() === dateStr && d.total > 0)) {
+                streak++;
+            } else if (i > 0) {
+                // Allow today to be empty but break if any previous day is empty
+                break;
+            }
+        }
+        return streak;
+    };
+
+    const currentStreak = calculateStreak();
+    const streakEmoji = currentStreak >= 7 ? '🔥' : currentStreak >= 3 ? '⚡' : '✨';
+
     const formatDeadline = (date) => {
         const d = new Date(date);
         if (isToday(d)) return 'วันนี้';
@@ -91,6 +174,18 @@ function Dashboard({ events, homework, workTasks, ideas = [], setActiveView }) {
                         วันนี้ {format(today, 'EEEE d MMMM yyyy', { locale: th })}
                     </p>
                 </div>
+
+                {/* Streak Badge */}
+                {currentStreak > 0 && (
+                    <div className="streak-badge glass-card">
+                        <span className="streak-emoji">{streakEmoji}</span>
+                        <div className="streak-info">
+                            <span className="streak-count">{currentStreak}</span>
+                            <span className="streak-label">วัน streak</span>
+                        </div>
+                    </div>
+                )}
+
                 {!currentUser && (
                     <div className="guest-badge glass-card" onClick={() => setActiveView('login')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
                         <Icons.Lock />
@@ -98,6 +193,29 @@ function Dashboard({ events, homework, workTasks, ideas = [], setActiveView }) {
                     </div>
                 )}
             </header>
+
+            {/* Urgent Alerts Banner */}
+            {urgentItems.length > 0 && (
+                <section className="urgent-alerts-banner glass-card">
+                    <div className="urgent-header">
+                        <Icons.AlertTriangle />
+                        <span>ต้องทำเร่งด่วน!</span>
+                    </div>
+                    <div className="urgent-items">
+                        {urgentItems.map((item, index) => (
+                            <div key={index} className={`urgent-item ${item.overdue ? 'overdue' : ''}`}>
+                                {item.type === 'homework' && <Icons.Book />}
+                                {item.type === 'work' && <Icons.Briefcase />}
+                                {item.type === 'event' && <Icons.Calendar />}
+                                <span className="urgent-title">{item.title}</span>
+                                <span className="urgent-deadline">
+                                    {item.overdue ? 'เลยกำหนด!' : isToday(new Date(item.deadline)) ? 'วันนี้' : 'พรุ่งนี้'}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+            )}
 
             {/* Stats Grid */}
             <section className="stats-grid">
@@ -119,6 +237,132 @@ function Dashboard({ events, homework, workTasks, ideas = [], setActiveView }) {
                         </div>
                     );
                 })}
+            </section>
+
+            {/* Weekly Productivity Chart */}
+            <section className="productivity-section">
+                <div className="weekly-chart-card glass-card">
+                    <div className="section-header">
+                        <h2 className="section-title">
+                            <Icons.Activity />
+                            กิจกรรมในสัปดาห์นี้
+                        </h2>
+                    </div>
+                    <div className="weekly-chart">
+                        {weekDays.map((day, index) => (
+                            <div
+                                key={index}
+                                className={`chart-bar-wrapper ${day.isToday ? 'today' : ''}`}
+                            >
+                                <div className="chart-bar-container">
+                                    <div
+                                        className="chart-bar"
+                                        style={{
+                                            height: `${(day.total / maxDayTotal) * 100}%`,
+                                            animationDelay: `${index * 100}ms`
+                                        }}
+                                    >
+                                        {day.total > 0 && (
+                                            <span className="chart-bar-value">{day.total}</span>
+                                        )}
+                                    </div>
+                                </div>
+                                <span className="chart-day-name">{day.dayName}</span>
+                                <span className="chart-day-num">{day.dayNum}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="productivity-score-card glass-card">
+                    <div className="section-header">
+                        <h2 className="section-title">
+                            <Icons.Target />
+                            ความคืบหน้า
+                        </h2>
+                    </div>
+                    <div className="score-ring-container">
+                        <svg className="score-ring" viewBox="0 0 100 100">
+                            <circle
+                                className="score-ring-bg"
+                                cx="50"
+                                cy="50"
+                                r="42"
+                                strokeWidth="8"
+                                fill="none"
+                            />
+                            <circle
+                                className="score-ring-progress"
+                                cx="50"
+                                cy="50"
+                                r="42"
+                                strokeWidth="8"
+                                fill="none"
+                                strokeDasharray={`${productivityScore * 2.64} 264`}
+                                strokeDashoffset="0"
+                                transform="rotate(-90 50 50)"
+                            />
+                        </svg>
+                        <div className="score-value">
+                            <span className="score-number">{productivityScore}</span>
+                            <span className="score-percent">%</span>
+                        </div>
+                    </div>
+                    <div className="score-label">
+                        เสร็จแล้ว {totalCompleted} จาก {totalItems} รายการ
+                    </div>
+                </div>
+
+                {/* Completion Trackers */}
+                <div className="completion-trackers-card glass-card">
+                    <div className="section-header">
+                        <h2 className="section-title">
+                            <Icons.Check />
+                            สถานะงาน
+                        </h2>
+                    </div>
+                    <div className="trackers-list">
+                        <div className="tracker-item">
+                            <div className="tracker-header">
+                                <Icons.Book />
+                                <span className="tracker-name">การบ้าน</span>
+                                <span className="tracker-count">{homeworkCompleted}/{homeworkTotal}</span>
+                            </div>
+                            <div className="tracker-bar-bg">
+                                <div
+                                    className="tracker-bar-fill homework"
+                                    style={{ width: `${homeworkPercent}%` }}
+                                ></div>
+                            </div>
+                        </div>
+                        <div className="tracker-item">
+                            <div className="tracker-header">
+                                <Icons.Briefcase />
+                                <span className="tracker-name">โปรเจกต์เสร็จ</span>
+                                <span className="tracker-count">{workCompleted}/{workTotal}</span>
+                            </div>
+                            <div className="tracker-bar-bg">
+                                <div
+                                    className="tracker-bar-fill work"
+                                    style={{ width: `${workPercent}%` }}
+                                ></div>
+                            </div>
+                        </div>
+                        <div className="tracker-item">
+                            <div className="tracker-header">
+                                <Icons.Activity />
+                                <span className="tracker-name">ความคืบหน้าเฉลี่ย</span>
+                                <span className="tracker-count">{avgWorkProgress}%</span>
+                            </div>
+                            <div className="tracker-bar-bg">
+                                <div
+                                    className="tracker-bar-fill average"
+                                    style={{ width: `${avgWorkProgress}%` }}
+                                ></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </section>
 
             {/* Main Content Grid */}

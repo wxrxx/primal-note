@@ -201,6 +201,18 @@
     color: var(--accent-primary);
 }
 
+.repeat-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-xs) var(--space-sm);
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+    border-radius: var(--radius-full);
+    background: rgba(34, 211, 238, 0.15);
+    color: var(--accent-tertiary);
+}
+
 /* Empty State */
 .homework-page .empty-state {
     text-align: center;

@@ -21,6 +21,13 @@ const priorities = [
     { id: 'low', label: 'ไม่ด่วน', color: '#10B981' },
 ];
 
+const repeatOptions = [
+    { id: 'none', label: 'ไม่ซ้ำ' },
+    { id: 'daily', label: 'ทุกวัน', icon: '🗓️' },
+    { id: 'weekly', label: 'ทุกสัปดาห์', icon: '📅' },
+    { id: 'monthly', label: 'ทุกเดือน', icon: '📆' },
+];
+
 function HomeworkPlanner({ homework, setHomework }) {
     const [showModal, setShowModal] = useState(false);
     const [editingItem, setEditingItem] = useState(null);
@@ -32,6 +39,7 @@ function HomeworkPlanner({ homework, setHomework }) {
         description: '',
         priority: 'medium',
         deadline: '',
+        repeat: 'none',
     });
 
     const today = new Date();
@@ -44,6 +52,7 @@ function HomeworkPlanner({ homework, setHomework }) {
             description: '',
             priority: 'medium',
             deadline: format(new Date(), 'yyyy-MM-dd'),
+            repeat: 'none',
         });
         setShowModal(true);
     };
@@ -56,6 +65,7 @@ function HomeworkPlanner({ homework, setHomework }) {
             description: item.description || '',
             priority: item.priority,
             deadline: format(new Date(item.deadline), 'yyyy-MM-dd'),
+            repeat: item.repeat || 'none',
         });
         setShowModal(true);
     };
@@ -65,9 +75,40 @@ function HomeworkPlanner({ homework, setHomework }) {
     };
 
     const handleToggleComplete = (id) => {
-        setHomework(homework.map(h =>
-            h.id === id ? { ...h, completed: !h.completed, completedAt: !h.completed ? new Date().toISOString() : null } : h
-        ));
+        const item = homework.find(h => h.id === id);
+        if (!item) return;
+
+        if (!item.completed && item.repeat && item.repeat !== 'none') {
+            // Create next occurrence for recurring task
+            const currentDeadline = new Date(item.deadline);
+            let nextDeadline = new Date(currentDeadline);
+
+            if (item.repeat === 'daily') {
+                nextDeadline.setDate(nextDeadline.getDate() + 1);
+            } else if (item.repeat === 'weekly') {
+                nextDeadline.setDate(nextDeadline.getDate() + 7);
+            } else if (item.repeat === 'monthly') {
+                nextDeadline.setMonth(nextDeadline.getMonth() + 1);
+            }
+
+            const nextItem = {
+                ...item,
+                id: Date.now().toString(),
+                deadline: nextDeadline.toISOString(),
+                completed: false,
+                completedAt: null,
+                createdAt: new Date().toISOString(),
+            };
+
+            setHomework(prev => [
+                ...prev.map(h => h.id === id ? { ...h, completed: true, completedAt: new Date().toISOString() } : h),
+                nextItem
+            ]);
+        } else {
+            setHomework(homework.map(h =>
+                h.id === id ? { ...h, completed: !h.completed, completedAt: !h.completed ? new Date().toISOString() : null } : h
+            ));
+        }
     };
 
     const handleSubmit = (e) => {
@@ -261,6 +302,11 @@ function HomeworkPlanner({ homework, setHomework }) {
                                             <Icons.Clock />
                                             {deadline.text}
                                         </span>
+                                        {item.repeat && item.repeat !== 'none' && (
+                                            <span className="repeat-badge" title="งานซ้ำ">
+                                                🔄 {repeatOptions.find(r => r.id === item.repeat)?.label}
+                                            </span>
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -323,14 +369,31 @@ function HomeworkPlanner({ homework, setHomework }) {
                                     </div>
                                 </div>
 
-                                <div className="input-group">
-                                    <label className="input-label">กำหนดส่ง</label>
-                                    <input
-                                        type="date"
-                                        className="input"
-                                        value={formData.deadline}
-                                        onChange={e => setFormData({ ...formData, deadline: e.target.value })}
-                                    />
+                                <div className="form-row">
+                                    <div className="input-group">
+                                        <label className="input-label">กำหนดส่ง</label>
+                                        <input
+                                            type="date"
+                                            className="input"
+                                            value={formData.deadline}
+                                            onChange={e => setFormData({ ...formData, deadline: e.target.value })}
+                                        />
+                                    </div>
+
+                                    <div className="input-group">
+                                        <label className="input-label">ทำซ้ำ</label>
+                                        <select
+                                            className="input"
+                                            value={formData.repeat}
+                                            onChange={e => setFormData({ ...formData, repeat: e.target.value })}
+                                        >
+                                            {repeatOptions.map(r => (
+                                                <option key={r.id} value={r.id}>
+                                                    {r.icon ? `${r.icon} ` : ''}{r.label}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
                                 </div>
 
                                 <div className="input-group">

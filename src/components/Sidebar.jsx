@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNotification } from '../contexts/NotificationContext';
+import { useTheme } from '../contexts/ThemeContext';
 import { Icons } from './Icons';
+import ThemeSettings from './ThemeSettings';
 import './Sidebar.css';
 
 const navItems = [
@@ -14,8 +16,10 @@ const navItems = [
 
 function Sidebar({ activeView, setActiveView, isAuthenticated, logout }) {
     const [isOpen, setIsOpen] = useState(false);
+    const [showThemeSettings, setShowThemeSettings] = useState(false);
     const { currentUser } = useAuth();
     const { success, error } = useNotification();
+    const { mode, toggleMode } = useTheme();
 
     const handleLogout = async () => {
         try {
@@ -46,8 +50,8 @@ function Sidebar({ activeView, setActiveView, isAuthenticated, logout }) {
                 {/* Logo */}
                 <div className="sidebar-header">
                     <div className="logo">
-                        <div className="logo-icon-premium">
-                            <img src="/logo.png" alt="Primal Note Logo" />
+                        <div className="logo-icon">
+                            <Icons.Target />
                         </div>
                         <div className="logo-text">
                             <span className="logo-title">Primal Note</span>
@@ -90,6 +94,24 @@ function Sidebar({ activeView, setActiveView, isAuthenticated, logout }) {
                     </ul>
                 </nav>
 
+                {/* Theme Settings Button */}
+                <div className="sidebar-actions">
+                    <button
+                        className="theme-toggle-btn"
+                        onClick={toggleMode}
+                        title={mode === 'dark' ? 'สลับเป็นธีมสว่าง' : 'สลับเป็นธีมมืด'}
+                    >
+                        {mode === 'dark' ? <Icons.Sun /> : <Icons.Moon />}
+                    </button>
+                    <button
+                        className="settings-btn"
+                        onClick={() => setShowThemeSettings(true)}
+                        title="ตั้งค่าธีม"
+                    >
+                        <Icons.Settings />
+                    </button>
+                </div>
+
                 {/* Footer */}
                 <div className="sidebar-footer">
                     {isAuthenticated ? (
@@ -125,7 +147,7 @@ function Sidebar({ activeView, setActiveView, isAuthenticated, logout }) {
                                     padding: '10px',
                                     borderRadius: '8px',
                                     border: 'none',
-                                    background: 'linear-gradient(135deg, var(--primary), var(--secondary))',
+                                    background: 'var(--accent-primary)',
                                     color: 'white',
                                     cursor: 'pointer',
                                     fontWeight: '500',
@@ -138,6 +160,9 @@ function Sidebar({ activeView, setActiveView, isAuthenticated, logout }) {
                     )}
                 </div>
             </aside>
+
+            {/* Theme Settings Modal */}
+            <ThemeSettings isOpen={showThemeSettings} onClose={() => setShowThemeSettings(false)} />
         </>
     );
 }
