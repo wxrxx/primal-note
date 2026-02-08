@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from './components/Sidebar';
 import SplashScreen from './components/SplashScreen';
+import DynamicIsland from './components/DynamicIsland';
 
 import Dashboard from './components/Dashboard';
 import Calendar from './components/Calendar';
@@ -23,12 +24,6 @@ function App() {
     const [workTasks, setWorkTasks] = useCloudStorage('primal-work', []);
     const [ideas, setIdeas] = useCloudStorage('primal-ideas', []);
     const { currentUser, logout } = useAuth();
-
-    // If needed to handle initial auth view logic
-    // But since we want to allow guest usage? Or force login?
-    // User requested "System register login", likely implies auth wall or optional auth.
-    // Let's make it optional: Dashboard has a "Login" button if not logged in.
-    // OR: The user can access 'login' and 'register' views via sidebar or redirect.
 
     // Show splash screen on first load
     if (isLoading) {
@@ -84,6 +79,7 @@ function App() {
     return (
         <div className="app-container">
             <Sidebar activeView={activeView} setActiveView={setActiveView} isAuthenticated={!!currentUser} logout={logout} />
+            <DynamicIsland events={events} />
             <main className="main-content">
                 {renderView()}
             </main>
