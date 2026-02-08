@@ -29,7 +29,7 @@
     font-size: var(--font-size-sm);
     cursor: pointer;
     animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    transition: all 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
     overflow: hidden;
     position: relative;
 }

@@ -33,16 +33,18 @@
 
 .work-card {
     cursor: pointer;
-    transition: all var(--transition-base);
-    animation: slideUp var(--transition-base) backwards;
+    will-change: transform;
+    transform: translateZ(0);
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+    /* animation: slideUp var(--transition-base) backwards; */
 }
 
 .work-card:hover {
-    transform: translateY(-4px);
+    transform: translateY(-4px) translateZ(0);
 }
 
 .work-card.completed {
-    opacity: 0.7;
+    opacity: 0.7 !important;
 }
 
 .work-card-header {
@@ -207,7 +209,9 @@
     padding: var(--space-md);
     background: var(--bg-tertiary);
     border-radius: var(--radius-md);
-    transition: all var(--transition-fast);
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-md);
+    transition: background var(--transition-fast), transform var(--transition-fast);
 }
 
 .subtask-item:hover {
@@ -222,7 +226,9 @@
 .subtask-title {
     font-size: var(--font-size-sm);
     color: var(--text-primary);
-    transition: all var(--transition-fast);
+    font-size: var(--font-size-sm);
+    color: var(--text-primary);
+    transition: color var(--transition-fast);
 }
 
 /* Subtasks Input */
@@ -265,6 +271,22 @@
 }
 
 /* Responsive */
+@media (max-width: 1024px) {
+    .work-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .modal-lg {
+        max-width: 90vw;
+    }
+}
+
+@media (max-width: 768px) {
+    .work-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 @media (max-width: 640px) {
     .work-grid {
         grid-template-columns: 1fr;
@@ -273,5 +295,13 @@
     .detail-meta {
         flex-direction: column;
         gap: var(--space-md);
+    }
+
+    .work-card {
+        min-height: 48px;
+    }
+
+    .subtask-item {
+        min-height: 44px;
     }
 }

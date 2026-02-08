@@ -156,7 +156,7 @@ function WorkPlanner({ workTasks, setWorkTasks }) {
     const completedCount = workTasks.filter(t => t.progress === 100).length;
 
     return (
-        <div className="work-page animate-fade-in">
+        <div className="work-page">
             {/* Header */}
             <header className="work-header">
                 <div className="header-left">
@@ -201,7 +201,7 @@ function WorkPlanner({ workTasks, setWorkTasks }) {
                             <div
                                 key={task.id}
                                 className={`work-card glass-card ${task.progress === 100 ? 'completed' : ''}`}
-                                style={{ animationDelay: `${index * 50}ms` }}
+                                style={{ opacity: task.progress === 100 ? 0.7 : 1 }}
                                 onClick={() => handleViewDetails(task)}
                             >
                                 <div className="work-card-header">

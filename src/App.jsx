@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Sidebar from './components/Sidebar';
+import SplashScreen from './components/SplashScreen';
+
 import Dashboard from './components/Dashboard';
 import Calendar from './components/Calendar';
 import HomeworkPlanner from './components/HomeworkPlanner';
 import WorkPlanner from './components/WorkPlanner';
 import Ideas from './components/Ideas';
+import Profile from './components/Profile';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import LoginRequired from './components/LoginRequired';
@@ -13,6 +16,7 @@ import { useAuth } from './contexts/AuthContext';
 import NotificationToast from './components/NotificationToast';
 
 function App() {
+    const [isLoading, setIsLoading] = useState(true);
     const [activeView, setActiveView] = useState('dashboard');
     const [events, setEvents] = useCloudStorage('primal-events', []);
     const [homework, setHomework] = useCloudStorage('primal-homework', []);
@@ -25,6 +29,11 @@ function App() {
     // User requested "System register login", likely implies auth wall or optional auth.
     // Let's make it optional: Dashboard has a "Login" button if not logged in.
     // OR: The user can access 'login' and 'register' views via sidebar or redirect.
+
+    // Show splash screen on first load
+    if (isLoading) {
+        return <SplashScreen onComplete={() => setIsLoading(false)} />;
+    }
 
     // Let's check if activeView is login/register
     if (activeView === 'login') {
@@ -65,6 +74,8 @@ function App() {
                 return <WorkPlanner workTasks={workTasks} setWorkTasks={setWorkTasks} />;
             case 'ideas':
                 return <Ideas ideas={ideas} setIdeas={setIdeas} />;
+            case 'profile':
+                return <Profile setActiveView={setActiveView} />;
             default:
                 return <Dashboard events={events} homework={homework} workTasks={workTasks} setActiveView={setActiveView} />;
         }

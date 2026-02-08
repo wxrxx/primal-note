@@ -51,11 +51,22 @@ export function AuthProvider({ children }) {
         return unsubscribe;
     }, []);
 
+    async function updateUserProfile(data) {
+        if (!auth.currentUser) return;
+        try {
+            await updateProfile(auth.currentUser, data);
+            setCurrentUser({ ...auth.currentUser }); // Force refresh
+        } catch (error) {
+            throw error;
+        }
+    }
+
     const value = {
         currentUser,
         signup,
         login,
-        logout
+        logout,
+        updateUserProfile
     };
 
     return (

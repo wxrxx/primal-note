@@ -1,5 +1,12 @@
-const { app, BrowserWindow, Menu } = require('electron');
+const { app, BrowserWindow, Menu, dialog } = require('electron');
 const path = require('path');
+const { autoUpdater } = require('electron-updater');
+const log = require('electron-log');
+
+// Configure logging
+log.transports.file.level = "info";
+autoUpdater.logger = log;
+log.info('App starting...');
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -15,7 +22,7 @@ const createWindow = () => {
         height: 800,
         minWidth: 800,
         minHeight: 600,
-        icon: path.join(__dirname, '../public/favicon.svg'),
+        icon: path.join(__dirname, '../public/icons/icon.png'),
         webPreferences: {
             nodeIntegration: false,
             contextIsolation: true,
@@ -70,5 +77,34 @@ app.whenReady().then(() => {
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
         app.quit();
+    }
+});
+
+// Update logic
+autoUpdater.on('update-available', () => {
+    log.info('Update available.');
+});
+
+autoUpdater.on('update-downloaded', (info) => {
+    log.info('Update downloaded');
+    dialog.showMessageBox({
+        type: 'info',
+        title: 'อัพเดทพร้อมใช้งาน',
+        message: `เวอร์ชันใหม่ (${info.version}) พร้อมที่จะติดตั้งแล้วครับ ต้องการเริ่มใหม่เพื่ออัพเดทเลยไหมครับ?`,
+        buttons: ['เริ่มใหม่ตอนนี้', 'ไว้ทีหลัง']
+    }).then((result) => {
+        if (result.response === 0) {
+            autoUpdater.quitAndInstall();
+        }
+    });
+});
+
+autoUpdater.on('error', (err) => {
+    log.error('Error in auto-updater: ' + err);
+});
+
+app.on('ready', () => {
+    if (process.env.NODE_ENV !== 'development') {
+        autoUpdater.checkForUpdatesAndNotify();
     }
 });

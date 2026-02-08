@@ -35,13 +35,18 @@
     color: var(--accent-success);
 }
 
-/* Filters */
+/* Filters - iOS 26 Liquid Glass */
 .filters-bar {
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin-bottom: var(--space-lg);
     padding: var(--space-md);
+    background: var(--bg-glass-card);
+    backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+    border: 1px solid var(--glass-border-color);
+    border-radius: var(--radius-2xl);
     flex-wrap: wrap;
     gap: var(--space-md);
 }
@@ -50,8 +55,10 @@
     display: flex;
     gap: var(--space-xs);
     padding: var(--space-xs);
-    background: var(--bg-primary);
-    border-radius: var(--radius-md);
+    background: var(--bg-glass);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: var(--radius-lg);
 }
 
 .filter-btn {
@@ -63,8 +70,9 @@
     font-family: var(--font-family);
     font-size: var(--font-size-sm);
     font-weight: 500;
+    font-weight: 500;
     cursor: pointer;
-    transition: all var(--transition-fast);
+    transition: background var(--transition-fast), color var(--transition-fast);
 }
 
 .filter-btn:hover {
@@ -92,7 +100,6 @@
     display: flex;
     gap: var(--space-md);
     align-items: flex-start;
-    animation: slideUp var(--transition-base) backwards;
 }
 
 .homework-card.completed {
@@ -126,8 +133,9 @@
 .homework-title {
     font-size: var(--font-size-lg);
     font-weight: 600;
+    font-weight: 600;
     color: var(--text-primary);
-    transition: all var(--transition-fast);
+    transition: color var(--transition-fast);
 }
 
 .homework-actions {
@@ -225,7 +233,13 @@
 }
 
 /* Responsive */
-@media (max-width: 640px) {
+@media (max-width: 1024px) {
+    .homework-page {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
     .filters-bar {
         flex-direction: column;
         align-items: stretch;
@@ -240,6 +254,17 @@
         width: 100%;
     }
 
+    .homework-actions {
+        opacity: 1;
+    }
+
+    .filter-btn {
+        min-height: 44px;
+        padding: var(--space-md);
+    }
+}
+
+@media (max-width: 640px) {
     .homework-card {
         flex-direction: row;
         flex-wrap: wrap;
@@ -247,5 +272,9 @@
 
     .homework-actions {
         opacity: 1;
+    }
+
+    .homework-card {
+        min-height: 48px;
     }
 }

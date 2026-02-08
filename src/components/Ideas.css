@@ -106,7 +106,9 @@
     font-size: var(--font-size-sm);
     font-family: var(--font-family);
     cursor: pointer;
-    transition: all var(--transition-fast);
+    font-family: var(--font-family);
+    cursor: pointer;
+    transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
     outline: none;
 }
 
@@ -133,7 +135,9 @@
     font-size: var(--font-size-sm);
     font-family: var(--font-family);
     cursor: pointer;
-    transition: all var(--transition-fast);
+    font-family: var(--font-family);
+    cursor: pointer;
+    transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
 }
 
 .tag-filter-btn:hover {
@@ -259,7 +263,9 @@
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-lg);
-    transition: all var(--transition-base);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    transition: background var(--transition-base), box-shadow var(--transition-base), padding var(--transition-base);
     cursor: text;
 }
 
@@ -334,7 +340,8 @@
     border: 1px solid var(--border-color);
     border-radius: var(--radius-lg);
     position: relative;
-    transition: all var(--transition-base);
+    position: relative;
+    transition: background var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base), transform var(--transition-base);
     display: flex;
     flex-direction: column;
     min-height: 160px;
@@ -498,6 +505,12 @@
     opacity: 0.3;
 }
 
+@media (max-width: 1024px) {
+    .ideas-grid-refined {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
 /* Mobile Responsive */
 @media (max-width: 768px) {
     .ideas-header {
@@ -515,12 +528,17 @@
         align-self: stretch;
     }
 
-    .ideas-grid {
+    .ideas-grid,
+    .ideas-grid-refined {
         grid-template-columns: 1fr;
     }
 
     .tag-filter-bar {
         flex-wrap: wrap;
+    }
+
+    .idea-card-actions {
+        opacity: 1;
     }
 }
 

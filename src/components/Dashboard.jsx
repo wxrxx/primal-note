@@ -167,7 +167,21 @@ function Dashboard({ events, homework, workTasks, ideas = [], setActiveView }) {
             {/* Header */}
             <header className="dashboard-header">
                 <div className="header-content">
-                    <h1 className="header-title">
+                    <h1 className="header-title" style={{ display: 'flex', alignItems: 'center' }}>
+                        {currentUser?.photoURL && (
+                            <img
+                                src={currentUser.photoURL}
+                                alt="Avatar"
+                                style={{
+                                    width: '48px',
+                                    height: '48px',
+                                    borderRadius: '50%',
+                                    marginRight: '16px',
+                                    objectFit: 'cover',
+                                    border: '2px solid var(--accent-primary)'
+                                }}
+                            />
+                        )}
                         สวัสดี{currentUser?.displayName ? `, ${currentUser.displayName}` : ''}! 👋
                     </h1>
                     <p className="header-subtitle">

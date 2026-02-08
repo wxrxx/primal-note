@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../firebase';
 import { doc, onSnapshot, setDoc } from 'firebase/firestore';
 
 export function useCloudStorage(key, initialValue) {
     const { currentUser } = useAuth();
+    const isFirstSync = useRef(true);
 
     // Initialize state function
     const initialize = () => {
@@ -23,7 +24,10 @@ export function useCloudStorage(key, initialValue) {
     // Effect to sync with Firestore when user is logged in
     useEffect(() => {
         // If not logged in, we rely on local state initialized from localStorage
-        if (!currentUser) return;
+        if (!currentUser) {
+            isFirstSync.current = false;
+            return;
+        }
 
         // Reference to the document in Firestore
         // Structure: users/{uid}/data/{key}
@@ -33,14 +37,18 @@ export function useCloudStorage(key, initialValue) {
         const unsubscribe = onSnapshot(docRef, (doc) => {
             if (doc.exists()) {
                 const data = doc.data().value;
-                setStoredValue(data);
-                // Also update local storage as backup/cache
-                window.localStorage.setItem(key, JSON.stringify(data));
-            } else {
-                // If doc doesn't exist in cloud but we have local data, upload it?
-                // Or if it's the first time user logs in, maybe we should push local data.
-                // For now, let's just stick to what we have or initialValue
+                // Only update if data is actually different to prevent unnecessary re-renders
+                setStoredValue(prev => {
+                    const prevStr = JSON.stringify(prev);
+                    const newStr = JSON.stringify(data);
+                    if (prevStr !== newStr) {
+                        window.localStorage.setItem(key, newStr);
+                        return data;
+                    }
+                    return prev;
+                });
             }
+            isFirstSync.current = false;
         });
 
         return unsubscribe;

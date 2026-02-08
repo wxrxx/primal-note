@@ -1,7 +1,7 @@
 {
   "name": "primal-note",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Primal Note - แอปวางแผนชีวิตสำหรับวัยรุ่น",
   "author": "Primal Note Team",
   "main": "electron/main.cjs",
@@ -12,12 +12,21 @@
     "preview": "vite preview",
     "electron:dev": "concurrently \"npm run dev\" \"wait-on http://localhost:5173 && cross-env NODE_ENV=development electron .\"",
     "electron:build": "npm run build && electron-builder",
+    "electron:build:beta": "npm run build && electron-builder --win -c.publish.provider=github -c.publish.owner=wxrxx -c.publish.repo=primal-note -c.publish.channel=beta",
+    "electron:build:prod": "npm run build && electron-builder --win --publish always",
+    "electron:build:local": "npm run build && electron-builder --win -c.publish.provider=generic -c.publish.url=http://localhost:5000",
+    "electron:serve-updates": "npx http-server release -p 5000",
     "electron:pack": "npm run build && electron-builder --dir"
   },
   "dependencies": {
+    "@resvg/resvg-js": "^2.6.2",
     "date-fns": "^3.3.1",
+    "electron-log": "^5.4.3",
     "electron-squirrel-startup": "^1.0.0",
+    "electron-updater": "^6.7.3",
     "firebase": "^12.8.0",
+    "jimp": "^1.6.0",
+    "png-to-ico": "^3.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
@@ -33,6 +42,17 @@
   "build": {
     "appId": "com.primalnote.app",
     "productName": "Primal Note",
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "wxrxx",
+        "repo": "primal-note"
+      },
+      {
+        "provider": "generic",
+        "url": "http://localhost:5000"
+      }
+    ],
     "directories": {
       "output": "release"
     },
@@ -42,6 +62,7 @@
       "public/**/*"
     ],
     "win": {
+      "icon": "build/icon.ico",
       "target": [
         {
           "target": "nsis",

@@ -91,7 +91,9 @@
     padding: var(--space-sm);
     cursor: pointer;
     border-radius: var(--radius-md);
-    transition: all var(--transition-fast);
+    cursor: pointer;
+    border-radius: var(--radius-md);
+    transition: background var(--transition-fast), transform var(--transition-fast);
     position: relative;
 }
 
@@ -204,8 +206,9 @@
     padding: var(--space-md);
     background: var(--bg-tertiary);
     border-radius: var(--radius-md);
-    transition: all var(--transition-fast);
-    animation: slideUp var(--transition-base);
+    border-radius: var(--radius-md);
+    transition: background var(--transition-fast), transform var(--transition-fast);
+    /* animation: slideUp var(--transition-base); */
 }
 
 .event-card:hover {
@@ -287,6 +290,10 @@
     .day-panel {
         max-height: none;
     }
+
+    .calendar-day {
+        min-height: 48px;
+    }
 }
 
 @media (max-width: 640px) {
@@ -308,6 +315,7 @@
 
     .calendar-day {
         padding: var(--space-xs);
+        min-height: 44px;
     }
 
     .day-number {
@@ -316,5 +324,13 @@
 
     .form-row {
         grid-template-columns: 1fr;
+    }
+
+    .event-actions {
+        opacity: 1;
+    }
+
+    .event-card {
+        padding: var(--space-md);
     }
 }

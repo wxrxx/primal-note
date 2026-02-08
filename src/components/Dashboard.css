@@ -161,7 +161,7 @@
     display: flex;
     align-items: center;
     gap: var(--space-md);
-    animation: slideUp var(--transition-base) backwards;
+    /* animation: slideUp var(--transition-base) backwards; - Disabled to prevent blur flicker */
 }
 
 .stat-icon {
@@ -202,7 +202,7 @@
 
 .weekly-chart-card,
 .productivity-score-card {
-    animation: slideUp var(--transition-base) backwards;
+    /* animation: slideUp var(--transition-base) backwards; */
 }
 
 .weekly-chart {
@@ -341,7 +341,7 @@
 
 /* Completion Trackers Card */
 .completion-trackers-card {
-    animation: slideUp var(--transition-base) backwards;
+    /* animation: slideUp var(--transition-base) backwards; */
 }
 
 .trackers-list {
@@ -414,7 +414,7 @@
 }
 
 .dashboard-section {
-    animation: slideUp var(--transition-base) backwards;
+    /* animation: slideUp var(--transition-base) backwards; */
 }
 
 .dashboard-section.full-width {
@@ -469,7 +469,7 @@
     padding: var(--space-sm);
     border-radius: var(--radius-md);
     transition: background var(--transition-fast);
-    animation: slideUp var(--transition-base) backwards;
+    /* animation: slideUp var(--transition-base) backwards; */
 }
 
 .event-item:hover {
@@ -531,8 +531,9 @@
     padding: var(--space-md);
     background: var(--bg-tertiary);
     border-radius: var(--radius-md);
-    transition: all var(--transition-fast);
-    animation: slideUp var(--transition-base) backwards;
+    border-radius: var(--radius-md);
+    transition: background var(--transition-fast), transform var(--transition-fast);
+    /* animation: slideUp var(--transition-base) backwards; */
 }
 
 .homework-item:hover {
@@ -580,8 +581,9 @@
     background: var(--bg-tertiary);
     border-radius: var(--radius-md);
     border: 1px solid var(--border-color);
-    transition: all var(--transition-base);
-    animation: slideUp var(--transition-base) backwards;
+    border: 1px solid var(--border-color);
+    transition: border-color var(--transition-base), transform var(--transition-base), box-shadow var(--transition-base);
+    /* animation: slideUp var(--transition-base) backwards; */
 }
 
 .work-card:hover {
@@ -646,8 +648,8 @@
 /* Quick Add Button */
 .quick-add-btn {
     position: fixed;
-    bottom: var(--space-xl);
-    right: var(--space-xl);
+    bottom: calc(var(--space-xl) + var(--safe-bottom));
+    right: calc(var(--space-xl) + var(--safe-right));
     padding: var(--space-md) var(--space-xl);
     font-size: var(--font-size-base);
     box-shadow: var(--shadow-lg), var(--shadow-glow);
@@ -724,9 +726,10 @@
     }
 
     .quick-add-btn {
-        bottom: var(--space-md);
-        right: var(--space-md);
+        bottom: calc(var(--space-md) + var(--safe-bottom));
+        right: calc(var(--space-md) + var(--safe-right));
         padding: var(--space-sm) var(--space-lg);
+        min-height: 48px;
     }
 
     .dashboard-header h1 {
@@ -748,5 +751,66 @@
 
     .trackers-list {
         gap: var(--space-sm);
+    }
+}
+
+/* Quick Add Floating Button - iOS 26 Liquid Glass */
+.quick-add-btn {
+    position: fixed;
+    bottom: calc(var(--space-xl) + var(--safe-bottom));
+    right: calc(var(--space-xl) + var(--safe-right));
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: 16px 24px;
+    background: var(--bg-glass-elevated);
+    backdrop-filter: blur(var(--glass-blur)) saturate(200%);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(200%);
+    border: 1.5px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-full);
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        0 0 0 1px rgba(255, 255, 255, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.quick-add-btn:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow:
+        0 12px 48px rgba(139, 92, 246, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.quick-add-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+.quick-add-btn.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.quick-add-btn.disabled:hover {
+    transform: none;
+}
+
+@media (max-width: 768px) {
+    .quick-add-btn {
+        bottom: calc(var(--space-lg) + var(--safe-bottom));
+        right: calc(var(--space-lg) + var(--safe-right));
+        padding: 14px 20px;
+    }
+
+    .quick-add-btn span {
+        display: none;
     }
 }

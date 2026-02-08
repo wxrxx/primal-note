@@ -4,6 +4,7 @@ import { useNotification } from '../contexts/NotificationContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { Icons } from './Icons';
 import ThemeSettings from './ThemeSettings';
+import AvatarSelector from './AvatarSelector';
 import './Sidebar.css';
 
 const navItems = [
@@ -17,6 +18,7 @@ const navItems = [
 function Sidebar({ activeView, setActiveView, isAuthenticated, logout }) {
     const [isOpen, setIsOpen] = useState(false);
     const [showThemeSettings, setShowThemeSettings] = useState(false);
+    const [showAvatarSelector, setShowAvatarSelector] = useState(false);
     const { currentUser } = useAuth();
     const { success, error } = useNotification();
     const { mode, toggleMode } = useTheme();
@@ -94,7 +96,7 @@ function Sidebar({ activeView, setActiveView, isAuthenticated, logout }) {
                     </ul>
                 </nav>
 
-                {/* Theme Settings Button */}
+                {/* Theme Toggle & Settings */}
                 <div className="sidebar-actions">
                     <button
                         className="theme-toggle-btn"
@@ -115,15 +117,64 @@ function Sidebar({ activeView, setActiveView, isAuthenticated, logout }) {
                 {/* Footer */}
                 <div className="sidebar-footer">
                     {isAuthenticated ? (
-                        <div className="user-card" onClick={handleLogout} style={{ cursor: 'pointer' }}>
-                            <div className="user-avatar">
-                                <span>👤</span>
+                        <>
+                            <div
+                                className="user-profile"
+                                onClick={() => {
+                                    setActiveView('profile');
+                                    setIsOpen(false);
+                                }}
+                                style={{
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    gap: '10px',
+                                    padding: '10px 12px'
+                                }}
+                            >
+                                {currentUser?.photoURL ? (
+                                    <img
+                                        src={currentUser.photoURL}
+                                        alt="Profile"
+                                        className="user-avatar-img"
+                                        style={{ width: '36px', height: '36px', borderRadius: '50%', flexShrink: 0 }}
+                                    />
+                                ) : (
+                                    <div
+                                        className="user-avatar"
+                                        style={{
+                                            width: '36px',
+                                            height: '36px',
+                                            minWidth: '36px',
+                                            borderRadius: '50%',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            fontSize: '14px',
+                                            fontWeight: '600',
+                                            flexShrink: 0
+                                        }}
+                                    >
+                                        {currentUser?.displayName ? currentUser.displayName[0].toUpperCase() : 'U'}
+                                    </div>
+                                )}
+                                <div className="user-info" style={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
+                                    <span className="user-name" style={{ fontSize: '13px', fontWeight: 500, display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                        {currentUser?.displayName || 'ผู้ใช้งาน'}
+                                    </span>
+                                    <span className="user-status" style={{ fontSize: '11px', display: 'block' }}>ออนไลน์</span>
+                                </div>
+                                <div style={{ flexShrink: 0 }}>
+                                    <Icons.ChevronRight size={16} />
+                                </div>
                             </div>
-                            <div className="user-info">
-                                <span className="user-name">{currentUser?.displayName || 'บัญชีของฉัน'}</span>
-                                <span className="user-status" style={{ color: '#ef4444' }}>ออกจากระบบ</span>
-                            </div>
-                        </div>
+
+                            <button className="btn-logout-sidebar" onClick={handleLogout} title="ออกจากระบบ">
+                                <Icons.LogOut size={18} />
+                                <span>ออกจากระบบ</span>
+                            </button>
+                        </>
                     ) : (
                         <div className="auth-buttons" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                             <button
@@ -162,7 +213,16 @@ function Sidebar({ activeView, setActiveView, isAuthenticated, logout }) {
             </aside>
 
             {/* Theme Settings Modal */}
-            <ThemeSettings isOpen={showThemeSettings} onClose={() => setShowThemeSettings(false)} />
+            <ThemeSettings
+                isOpen={showThemeSettings}
+                onClose={() => setShowThemeSettings(false)}
+            />
+
+            {/* Avatar Selector Modal */}
+            <AvatarSelector
+                isOpen={showAvatarSelector}
+                onClose={() => setShowAvatarSelector(false)}
+            />
         </>
     );
 }

@@ -3,29 +3,79 @@
 
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <link rel="icon" href="/favicon.ico" />
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <meta name="description" content="Primal Note - แอปวางแผนชีวิตสำหรับวัยรุ่น ปฏิทิน การบ้าน งาน" />
 
   <!-- PWA Meta Tags -->
   <meta name="theme-color" content="#8B5CF6" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Primal Note" />
   <link rel="apple-touch-icon" href="/icons/icon-192.png" />
   <link rel="manifest" href="/manifest.json" />
 
-  <!-- Fonts -->
+  <!-- Fonts - iOS 26 Style -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap"
     rel="stylesheet">
 
   <title>Primal Note - Life Planner</title>
 </head>
 
 <body>
+  <!-- Warm up backdrop-filter engine -->
+  <div
+    style="position: absolute; opacity: 0.01; pointer-events: none; z-index: -9999; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); width: 1px; height: 1px;">
+  </div>
+  <!-- Pre-apply glass CSS variables before React mounts to prevent flicker -->
+  <script>
+    (function () {
+      const mode = localStorage.getItem('primal-theme-mode') || 'dark';
+      const glassOpacity = parseFloat(localStorage.getItem('primal-glass-opacity')) || 0.75;
+      const isDark = mode === 'dark';
+      const baseRgb = '255, 255, 255';
+      const minOpacity = isDark ? 0.008 : 0.3;
+      const baseAlpha = Math.max(minOpacity, glassOpacity * 0.1);
+      const cardAlpha = Math.max(minOpacity + 0.007, glassOpacity * 0.15);
+      const cardHoverAlpha = Math.max(minOpacity + 0.015, glassOpacity * 0.25);
+      const elevatedAlpha = Math.max(minOpacity + 0.012, glassOpacity * 0.2);
+
+      document.documentElement.setAttribute('data-theme', mode);
+      document.documentElement.style.setProperty('--bg-glass', 'rgba(' + baseRgb + ', ' + baseAlpha + ')');
+      document.documentElement.style.setProperty('--bg-glass-card', 'rgba(' + baseRgb + ', ' + cardAlpha + ')');
+      document.documentElement.style.setProperty('--bg-glass-card-hover', 'rgba(' + baseRgb + ', ' + cardHoverAlpha + ')');
+      document.documentElement.style.setProperty('--bg-glass-elevated', 'rgba(' + baseRgb + ', ' + elevatedAlpha + ')');
+
+      const glassBlur = parseInt(localStorage.getItem('primal-glass-blur')) || 20;
+      document.documentElement.style.setProperty('--glass-blur', glassBlur + 'px');
+      document.documentElement.style.setProperty('--glass-blur-heavy', (glassBlur * 2) + 'px');
+      document.documentElement.style.setProperty('--glass-blur-light', (glassBlur * 0.5) + 'px');
+
+      // Pre-load background image
+      const bgImage = localStorage.getItem('primal-bg-image');
+      const bgOpacity = parseFloat(localStorage.getItem('primal-bg-opacity')) || 0.65;
+
+      if (bgImage) {
+        document.documentElement.style.setProperty('--bg-image', 'url(' + bgImage + ')');
+        document.documentElement.style.setProperty('--bg-overlay-opacity', bgOpacity);
+        document.documentElement.style.setProperty('--bg-card', 'var(--bg-glass-card)');
+        document.documentElement.style.setProperty('--bg-secondary', 'var(--bg-glass)');
+        document.documentElement.style.setProperty('--bg-tertiary', 'var(--bg-glass-card)');
+        document.documentElement.style.setProperty('--bg-card-hover', 'var(--bg-glass-card-hover)');
+        document.documentElement.style.setProperty('--bg-primary', 'transparent');
+
+        // Add class to body immediately
+        document.addEventListener('DOMContentLoaded', function () {
+          document.body.classList.add('has-custom-bg');
+        });
+        // Also try to add to root/html if possible or handle in body tag
+      }
+    })();
+  </script>
   <div id="root"></div>
   <script type="module" src="/src/main.jsx"></script>
 
